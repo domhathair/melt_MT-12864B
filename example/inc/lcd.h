@@ -22,7 +22,7 @@
 #define LCD_CSI_LOW GPIOB->BSRR = GPIO_BSRR_BR5
 
 /*Указать макросы для проверки состояния SPI и буфера данных*/
-#define SPI_CHECK SPI1->SR &SPI_SR_TXE
+#define SPI_CHECK SPI1->SR & SPI_SR_TXE
 #define SPI_SEND SPI1->DR
 
 /**/
