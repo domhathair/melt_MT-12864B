@@ -219,6 +219,7 @@ void LCD_Circle(MODE mode, uint32_t str, uint32_t col, uint32_t rad) {
 
         x++;
     }
+    return;
 } /*LCD_Circle*/
 
 /**/
