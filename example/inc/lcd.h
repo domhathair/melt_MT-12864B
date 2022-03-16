@@ -1,9 +1,7 @@
 #include "stm32f2xx.h"
-
-/*Закомментировать, если в среде разработки кириллица работает без ошибок*/
-#define __CYRILLIC 1
-
-/**/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define LCD_HEIGHT 64
 #define LCD_WIDTH 128
@@ -28,14 +26,14 @@
 /**/
 
 typedef enum {
-    DRAW,
-    CLEAR,
-    INVERT
+    DRAW, /*Заполнить поле*/
+    CLEAR, /*Очистить поле*/
+    INVERT /*Инвертировать значение поля*/
 } MODE;
 
 /**/
 
-extern uint32_t SCREEN[8][128];
+extern uint8_t SCREEN[LCD_HEIGHT / 8][LCD_WIDTH];
 extern uint8_t FONT[];
 
 /**/
@@ -59,6 +57,36 @@ union uint64_R {
 
 /**/
 
+typedef struct {
+	void (*All)(MODE mode);
+	void (*Area)(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
+	void (*Bitmap)(MODE mode, uint8_t str, uint8_t col, uint8_t *image, uint8_t height, uint8_t width);
+} LCD_Draw_Fill_Struct;
+
+typedef struct {
+	void (*Horizontal)(MODE mode, uint8_t str, uint8_t col, uint8_t length);
+	void (*Vertical)(MODE mode, uint8_t str, uint8_t col, uint8_t length);
+	void (*Arbitrary)(MODE mode, uint8_t str_from, uint8_t col_from, uint8_t str_to, uint8_t col_to);
+} LCD_Draw_Line_Struct;
+
+typedef struct {
+	LCD_Draw_Fill_Struct Fill;
+	void (*Pixel)(MODE mode, uint8_t str, uint8_t col);
+	LCD_Draw_Line_Struct Line;
+	void (*Rectangle)(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
+	void (*Circle)(MODE mode, uint8_t str, uint8_t col, uint8_t rad);
+} LCD_Draw_Struct;
+
+typedef struct {
+	void (*Init)(void);
+	LCD_Draw_Struct Draw;
+	void (*Print)(MODE mode, uint8_t str, uint8_t col, char *string);
+} LCD_Struct;
+
+extern LCD_Struct LCD;
+
+/**/
+
 void LCD_Send(uint8_t data, uint8_t address0);
 
 void LCD_Send_Command(uint8_t cmd);
@@ -67,26 +95,28 @@ void LCD_Send_Data(uint8_t data);
 
 void LCD_Address(uint8_t address);
 
-void Init_LCD_Hardware(void);
+void LCD_Init_Hardware(void);
 
-void Init_LCD(void);
+void LCD_Init(void);
 
-void LCD_Screen(MODE mode);
+void LCD_Draw_Fill_All(MODE mode);
 
-void LCD_Pixel(MODE mode, uint8_t str, uint8_t col);
+void LCD_Draw_Pixel(MODE mode, uint8_t str, uint8_t col);
 
-void LCD_HLine(MODE mode, uint8_t str, uint8_t col, uint8_t length);
+void LCD_Draw_Line_Horizontal(MODE mode, uint8_t str, uint8_t col, uint8_t length);
 
-void LCD_VLine(MODE mode, uint8_t str, uint8_t col, uint8_t length);
+void LCD_Draw_Line_Vertical(MODE mode, uint8_t str, uint8_t col, uint8_t length);
 
-void LCD_Line(MODE mode, uint8_t str_From, uint8_t col_From, uint8_t str_To, uint8_t col_To);
+void LCD_Draw_Line_Arbitrary(MODE mode, uint8_t str_from, uint8_t col_from, uint8_t str_to, uint8_t col_to);
 
-void LCD_Rectangle(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
+void LCD_Draw_Rectangle(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
 
-void LCD_Fill(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
+void LCD_Draw_Fill_Area(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
 
-void LCD_Circle(MODE mode, uint32_t str, uint32_t col, uint32_t rad);
+void LCD_Draw_Circle(MODE mode, uint8_t str, uint8_t col, uint8_t rad);
 
-void LCD_Bitmap(MODE mode, uint8_t str, uint8_t col, uint8_t *image, uint8_t height, uint8_t width);
+void LCD_Draw_Fill_Bitmap(MODE mode, uint8_t str, uint8_t col, uint8_t *image, uint8_t height, uint8_t width);
+
+void LCD_UTF8_Decode(char *string);
 
 void LCD_Print(MODE mode, uint8_t str, uint8_t col, char *string);

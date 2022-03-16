@@ -103,13 +103,38 @@ typedef enum {
 
 /**/
 
+typedef struct {
+	void (*BF)(Port_Mode_Enum mode, Port_Enum address, uint8_t number);
+	void (*AF)(Port_Mode_AF_Enum af_Mode, Port_Enum address, uint8_t number);
+} Init_Port_Mode_Struct;
+
+typedef struct {
+	void (*RCControl)(Port_Enum address, Functional_State tumbler);
+	Init_Port_Mode_Struct Mode;
+	void (*Level)(Port_Enum address, uint8_t number, Port_Value value);
+} Init_Port_Struct;
+
+typedef struct {
+	void (*Common)(void);
+} Init_TIM_Struct;
+
+typedef struct {
+	void (*PLL)(void);
+	Init_Port_Struct Port;
+	Init_TIM_Struct TIM;
+} Init_Struct;
+
+extern Init_Struct Init;
+
+/**/
+
 void Init_PLL(void);
 
-void Init_Port_RCC(Port_Enum address, Functional_State tumbler);
+void Init_Port_RCControl(Port_Enum address, Functional_State tumbler);
 
-void Init_Port_Mode(Port_Mode_Enum mode, Port_Enum address, uint8_t number);
+void Init_Port_Mode_BF(Port_Mode_Enum mode, Port_Enum address, uint8_t number);
 
-void Init_Port_AF_Mode(Port_Mode_AF_Enum af_Mode, Port_Enum address, uint8_t number);
+void Init_Port_Mode_AF(Port_Mode_AF_Enum af_Mode, Port_Enum address, uint8_t number);
 
 void Init_Port_Level(Port_Enum address, uint8_t number, Port_Value value);
 

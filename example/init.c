@@ -1,6 +1,22 @@
 #include "init.h"
 #include "main.h"
 
+Init_Struct Init = {
+    &Init_PLL, /*Init.PLL*/
+    { /*<Init_Port_Struct>*/
+        &Init_Port_RCControl,
+        { /*<Init_Port_Mode_Struct>*/
+            &Init_Port_Mode_BF,
+            &Init_Port_Mode_AF
+        }, /*</Init_Port_Mode_Struct>*/
+        &Init_Port_Level
+    }, /*</Init_Port_Struct>*/
+    { /*<Init_TIM_Struct>*/    
+        &Init_TIM_Common
+    } /*</Init_TIM_Struct>*/ 
+}; /*Init*/
+            
+            
 void Init_PLL(void) {
     uint32_t count = 0, current = 0;
     RCC->CR |= RCC_CR_HSEON;
@@ -33,19 +49,17 @@ void Init_PLL(void) {
     } while ((current == 0) && (count++ != 0xFFFF));
     if (current == 0)
         exit(-1);
-    return;
 } /*Init_PLL*/
 
 /**/
 
-void Init_Port_RCC(Port_Enum address, Functional_State tumbler) {
+void Init_Port_RCControl(Port_Enum address, Functional_State tumbler) {
     RCC->AHB1ENR = (tumbler == DISABLE) ? RCC->AHB1ENR & ~(1 << address) : RCC->AHB1ENR | (1 << address);
-    return;
-} /*Init_Port_RCC*/
+} /*Init_Port_RCControl*/
 
 /**/
 
-void Init_Port_Mode(Port_Mode_Enum mode, Port_Enum address, uint8_t number) {
+void Init_Port_Mode_BF(Port_Mode_Enum mode, Port_Enum address, uint8_t number) {
     GPIO_Mode_Setup GPIO_Mode_Register = {0};
     GPIO_Mode_Register.Full = mode;
     uint32_t *GPIO_Address = (uint32_t * )(AHB1PERIPH_BASE + (address << 10));
@@ -57,12 +71,11 @@ void Init_Port_Mode(Port_Mode_Enum mode, Port_Enum address, uint8_t number) {
     GPIO_Address[OSPEEDR] |= GPIO_Mode_Register.Part.ospeedr << (number * 2);
     GPIO_Address[PUPDR] &= ~(0x3 << (number * 2));
     GPIO_Address[PUPDR] |= GPIO_Mode_Register.Part.pupdr << (number * 2);
-    return;
-} /*Init_Port_Mode*/
+} /*Init_Port_Mode_BF*/
 
 /**/
 
-void Init_Port_AF_Mode(Port_Mode_AF_Enum af_Mode, Port_Enum address, uint8_t number) {
+void Init_Port_Mode_AF(Port_Mode_AF_Enum af_Mode, Port_Enum address, uint8_t number) {
     uint32_t *GPIO_Address = (uint32_t * )(AHB1PERIPH_BASE + (address << 10));
     if (number < 8) {
         GPIO_Address[AFRL] &= ~(0xF << (number * 4));
@@ -71,15 +84,13 @@ void Init_Port_AF_Mode(Port_Mode_AF_Enum af_Mode, Port_Enum address, uint8_t num
         GPIO_Address[AFRH] &= ~(0xF << ((number - 8) * 4));
         GPIO_Address[AFRH] |= af_Mode << ((number - 8) * 4);
     }
-    return;
-} /*Init_Port_AF_Mode*/
+} /*Init_Port_Mode_AF*/
 
 /**/
 
 void Init_Port_Level(Port_Enum address, uint8_t number, Port_Value value) {
     uint32_t *GPIO_Address = (uint32_t * )(AHB1PERIPH_BASE + (address << 10));
     GPIO_Address[BSRR] |= 1 << number << ((value == LOW) ? 16 : 0);
-    return;
 } /*Init_Port_Level*/
 
 /**/
@@ -94,5 +105,4 @@ void Init_TIM_Common(void) {
     NVIC_SetPriority(TIM6_DAC_IRQn, 3);
     TIM6->CR1 |= TIM_CR1_CEN;
     NVIC_SetPendingIRQ(TIM6_DAC_IRQn);
-    return;
 } /*Init_TIM_Common*/
