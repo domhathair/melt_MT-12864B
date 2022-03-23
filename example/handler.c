@@ -2,8 +2,10 @@
 #include "init.h"
 #include "lcd.h"
 
-int32_t deg_sec = 271, deg_min = 270;
+int32_t deg_sec = 271, deg_min = 271, deg_hour = 271;
 char string[64] = {0};
+
+size_t sec_len = 20, min_len = 18, hour_len = 16;
 
 void TIM6_DAC_IRQHandler(void) {
 
@@ -14,22 +16,32 @@ void TIM6_DAC_IRQHandler(void) {
     LCD.Print(DRAW, 30, 64, string);
 
     LCD.Draw.Line.Arbitrary(CLEAR, 32, 32,
-             32 + 20 * cos(deg_sec % 60 / 30.0 * 3.141592653) /*x coor*/,
-             32 + 20 * sin(deg_sec % 60 / 30.0 * 3.141592653) /*y coor*/
+             32 + sec_len * cos(deg_sec % 60 / 30.0 * 3.141592653) /*x coor*/,
+             32 + sec_len * sin(deg_sec % 60 / 30.0 * 3.141592653) /*y coor*/
     );
     deg_sec--;
     if (!(TICK % 60)) {
         LCD.Draw.Line.Arbitrary(CLEAR, 32, 32,
-                 32 + 18 * cos(deg_min % 60 / 30.0 * 3.141592653),
-                 32 + 18 * sin(deg_min % 60 / 30.0 * 3.141592653));
+                 32 + sec_len * cos(deg_min % 60 / 30.0 * 3.141592653),
+                 32 + sec_len * sin(deg_min % 60 / 30.0 * 3.141592653));
         deg_min--;
     }
+	if (!(TICK % 300)) {
+		LCD.Draw.Line.Arbitrary(CLEAR, 32, 32,
+                 32 + hour_len * cos(deg_hour % 60 / 30.0 * 3.141592653),
+                 32 + hour_len * sin(deg_hour % 60 / 30.0 * 3.141592653));
+        deg_hour--;
+	}
+	
+	LCD.Draw.Line.Arbitrary(DRAW, 32, 32,
+             32 + hour_len * cos(deg_hour % 60 / 30.0 * 3.141592653),
+             32 + hour_len * sin(deg_hour % 60 / 30.0 * 3.141592653));
     LCD.Draw.Line.Arbitrary(DRAW, 32, 32,
-             32 + 18 * cos(deg_min % 60 / 30.0 * 3.141592653),
-             32 + 18 * sin(deg_min % 60 / 30.0 * 3.141592653));
+             32 + sec_len * cos(deg_min % 60 / 30.0 * 3.141592653),
+             32 + sec_len * sin(deg_min % 60 / 30.0 * 3.141592653));
     LCD.Draw.Line.Arbitrary(DRAW, 32, 32,
-             32 + 20 * cos(deg_sec % 60 / 30.0 * 3.141592653),
-             32 + 20 * sin(deg_sec % 60 / 30.0 * 3.141592653));
+             32 + sec_len * cos(deg_sec % 60 / 30.0 * 3.141592653),
+             32 + sec_len * sin(deg_sec % 60 / 30.0 * 3.141592653));
 
     TICK++;
 }
