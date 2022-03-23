@@ -26,7 +26,7 @@ void TIM6_DAC_IRQHandler(void) {
                  32 + sec_len * sin(deg_min % 60 / 30.0 * 3.141592653));
         deg_min--;
     }
-    if (!(TICK % 300)) {
+    if (!(TICK % 720)) {
 		LCD.Draw.Line.Arbitrary(CLEAR, 32, 32,
                  32 + hour_len * cos(deg_hour % 60 / 30.0 * 3.141592653),
                  32 + hour_len * sin(deg_hour % 60 / 30.0 * 3.141592653));
