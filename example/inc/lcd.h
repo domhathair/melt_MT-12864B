@@ -87,36 +87,36 @@ extern LCD_Struct LCD;
 
 /**/
 
-void LCD_Send(uint8_t data, uint8_t address0);
+extern void LCD_Send(uint8_t data, uint8_t address0);
 
-void LCD_Send_Command(uint8_t cmd);
+extern void LCD_Send_Command(uint8_t cmd);
 
-void LCD_Send_Data(uint8_t data);
+extern void LCD_Send_Data(uint8_t data);
 
-void LCD_Address(uint8_t address);
+extern void LCD_Address(uint8_t address);
 
-void LCD_Init_Hardware(void);
+extern void LCD_Init_Hardware(void);
 
-void LCD_Init(void);
+extern void LCD_Init(void);
 
-void LCD_Draw_Fill_All(MODE mode);
+extern void LCD_Draw_Fill_All(MODE mode);
 
-void LCD_Draw_Pixel(MODE mode, uint8_t str, uint8_t col);
+extern void LCD_Draw_Pixel(MODE mode, uint8_t str, uint8_t col);
 
-void LCD_Draw_Line_Horizontal(MODE mode, uint8_t str, uint8_t col, uint8_t length);
+extern void LCD_Draw_Line_Horizontal(MODE mode, uint8_t str, uint8_t col, uint8_t length);
 
-void LCD_Draw_Line_Vertical(MODE mode, uint8_t str, uint8_t col, uint8_t length);
+extern void LCD_Draw_Line_Vertical(MODE mode, uint8_t str, uint8_t col, uint8_t length);
 
-void LCD_Draw_Line_Arbitrary(MODE mode, uint8_t str_from, uint8_t col_from, uint8_t str_to, uint8_t col_to);
+extern void LCD_Draw_Line_Arbitrary(MODE mode, uint8_t str_from, uint8_t col_from, uint8_t str_to, uint8_t col_to);
 
-void LCD_Draw_Rectangle(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
+extern void LCD_Draw_Rectangle(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
 
-void LCD_Draw_Fill_Area(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
+extern void LCD_Draw_Fill_Area(MODE mode, uint8_t str, uint8_t col, uint8_t height, uint8_t width);
 
-void LCD_Draw_Circle(MODE mode, uint8_t str, uint8_t col, uint8_t rad);
+extern void LCD_Draw_Circle(MODE mode, uint8_t str, uint8_t col, uint8_t rad);
 
-void LCD_Draw_Fill_Bitmap(MODE mode, uint8_t str, uint8_t col, uint8_t *image, uint8_t height, uint8_t width);
+extern void LCD_Draw_Fill_Bitmap(MODE mode, uint8_t str, uint8_t col, uint8_t *image, uint8_t height, uint8_t width);
 
-void LCD_UTF8_Decode(char *string);
+extern void LCD_UTF8_Decode(char *string);
 
-void LCD_Print(MODE mode, uint8_t str, uint8_t col, char *string);
+extern void LCD_Print(MODE mode, uint8_t str, uint8_t col, char *string);
