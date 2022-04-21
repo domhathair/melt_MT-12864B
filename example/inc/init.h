@@ -128,14 +128,14 @@ extern Init_Struct Init;
 
 /**/
 
-void Init_PLL(void);
+extern void Init_PLL(void);
 
-void Init_Port_RCControl(Port_Enum address, Functional_State tumbler);
+extern void Init_Port_RCControl(Port_Enum address, Functional_State tumbler);
 
-void Init_Port_Mode_BF(Port_Mode_Enum mode, Port_Enum address, uint8_t number);
+extern void Init_Port_Mode_BF(Port_Mode_Enum mode, Port_Enum address, uint8_t number);
 
-void Init_Port_Mode_AF(Port_Mode_AF_Enum af_Mode, Port_Enum address, uint8_t number);
+extern void Init_Port_Mode_AF(Port_Mode_AF_Enum af_Mode, Port_Enum address, uint8_t number);
 
-void Init_Port_Level(Port_Enum address, uint8_t number, Port_Value value);
+extern void Init_Port_Level(Port_Enum address, uint8_t number, Port_Value value);
 
-void Init_TIM_Common(void);
+extern void Init_TIM_Common(void);
