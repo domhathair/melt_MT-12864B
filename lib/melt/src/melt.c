@@ -4,11 +4,11 @@
  *     Инициализация SPI контроллера
  *          Требуемые данные:
  *
- * Пины:   GP_PP    -> MELT_RES
- *         SPI_CLK  -> MELT_SCL
- *         GP_PP    -> MELT_A0
- *         SPI_MOSI -> MELT_SI
- *         GP_PP    -> MELT_CSI
+ * Пины:   GP_PP    -> LCD_RES
+ *         SPI_CLK  -> LCD_SCL
+ *         GP_PP    -> LCD_A0
+ *         SPI_MOSI -> LCD_SI
+ *         GP_PP    -> LCD_CSI
  *
  * Режим SPI: 1   -   1
  *            ---- ----
