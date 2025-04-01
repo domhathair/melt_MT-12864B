@@ -74,10 +74,10 @@ extern int main(void) {
 
     melt_draw_rectangle(MODE_DRAW, 0, 0, 64, 128);
     melt_draw_rectangle(MODE_DRAW, 2, 2, 60, 124);
-    melt_draw_rectangle(MODE_DRAW, 22, 63, 23, 58);
     melt_draw_rectangle(MODE_DRAW, 20, 61, 27, 62);
+    melt_pour_area(MODE_DRAW, 22, 63, 23, 58);
 
-    melt_printf(MODE_DRAW, 24, 65, u8"Счётчик:");
+    melt_printf(MODE_INVERT, 24, 65, u8"Счётчик:");
 
     melt_draw_circle(MODE_DRAW, 32, 32, 24);
     melt_draw_circle(MODE_DRAW, 32, 32, 22);
@@ -100,8 +100,8 @@ extern void tim4_isr(void) {
 
     TIM_SR(TIM4) &= ~TIM_SR_UIF;
 
-    melt_pour_area(MODE_CLEAR, 35, 64, 9, 56);
-    melt_printf(MODE_DRAW, 36, 64, u8"%02lu:%02lu:%02lu", (tick / 3600), ((tick / 60) % 60), (tick % 60));
+    melt_pour_area(MODE_DRAW, 35, 64, 9, 56);
+    melt_printf(MODE_INVERT, 36, 64, u8"%02lu:%02lu:%02lu", (tick / 3600), ((tick / 60) % 60), (tick % 60));
 
     melt_draw_line_arbitrary(MODE_CLEAR, 32, 32, 32 + sec_len * cos(deg_sec % 60 / 30.0 * M_PI),
                              32 + sec_len * sin(deg_sec % 60 / 30.0 * M_PI));
