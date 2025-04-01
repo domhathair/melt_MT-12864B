@@ -45,7 +45,7 @@ extern void melt_init(void) {
     for (size_t i = 0; i < TIMEOUT; i++);
     MELT_RES(1);
     MELT_CSI(0);
-    for (size_t i = 0; i < sizeof_array(cmd); i++) /*  */
+    for (size_t i = 0; i < sizeof_array(cmd); i++)
         melt_send_command(cmd[i]);
     melt_pour_all(MODE_CLEAR);
 }
@@ -61,6 +61,8 @@ static void init_tim4(void) {
 }
 
 extern int main(void) {
+    enum { TIMEOUT = F_CPU };
+
     cm_disable_interrupts();
 
     rcc_periph_clock_enable(RCC_TIM4);
@@ -71,6 +73,22 @@ extern int main(void) {
 
     init_tim4();
     melt_init();
+
+    static const uint8_t *alphabet[] = {
+        u8"@ABCDEFGHIJKLMNO",
+        u8"PQRSTUVWXYZ[\\]^_",
+        u8"ёabcdefghijklmno",
+        u8"pqrstuvwxyz{|}~Ё",
+        u8"АБВГДЕЖЗИЙКЛМНОП",
+        u8"РСТУФХЦЧШЩЪЫЬЭЮЯ",
+        u8"абвгдежзийклмноп",
+        u8"рстуфхцчшщъыьэюя"};
+
+    for (size_t i = 0; i < sizeof_array(alphabet); i++)
+        melt_printf(MODE_DRAW, i * CHAR_BIT, CHAR_BIT, alphabet[i]);
+
+    for (size_t i = 0; i < TIMEOUT; i++); /* Delay */
+    melt_pour_all(MODE_CLEAR);
 
     melt_draw_rectangle(MODE_DRAW, 0, 0, 64, 128);
     melt_draw_rectangle(MODE_DRAW, 2, 2, 60, 124);
