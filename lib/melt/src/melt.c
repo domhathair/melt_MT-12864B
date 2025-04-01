@@ -229,6 +229,10 @@ static const letter_t g_letters[] = {
 
 static int utf8_to_win1251(const uint8_t *utf8, uint8_t *win1251, size_t size) {
     size_t j = 0;
+
+    if (utf8 == NULL || win1251 == NULL || size == 0)
+        return -1;
+
     for (size_t i = 0; i < size && utf8[i] != 0; i++) {
         uint8_t prefix = utf8[i], suffix = utf8[i + 1];
         if ((prefix & 0x80) == 0) {
@@ -297,6 +301,8 @@ extern void melt_printf(mode_t mode, uint8_t str, uint8_t col, const uint8_t *fm
         uint8_t c = col + (7 * i);
         if (c < MELT_WIDTH)
             melt_pour_bitmap(mode, str, c, &font[out[i] * 6], 1, 6);
+        else
+            break;
     }
 }
 
