@@ -40,10 +40,7 @@
 
 [[gnu::weak]] extern void melt_send([[maybe_unused]] uint8_t data, [[maybe_unused]] uint8_t a0) {
     /**
-     * if (!a0)
-     *     MELT_A0_LOW;
-     * else
-     *     MELT_A0_HIGH;
+     * MELT_A0(a0);
      *
      * while (!(SPI_TX_IS_EMPTY));
      *
@@ -57,11 +54,11 @@
      * enum { TIMEOUT = USHRT_MAX };
      * melt_hardware();
      *
-     * MELT_RES_LOW;
-     * MELT_CSI_HIGH;
+     * MELT_RES(0);
+     * MELT_CSI(1);
      * for (size_t i = 0; i < TIMEOUT; i++);
-     * MELT_RES_HIGH;
-     * MELT_CSI_LOW;
+     * MELT_RES(1);
+     * MELT_CSI(0);
      * for (size_t i = 0; i < sizeof_array(cmd); i++)
      *     melt_send_command(cmd[i]);
      * melt_pour_all(MODE_CLEAR);
