@@ -85,7 +85,7 @@ extern int main(void) {
         u8"рстуфхцчшщъыьэюя"};
 
     for (size_t i = 0; i < sizeof_array(alphabet); i++)
-        melt_printf(MODE_DRAW, i * CHAR_BIT, CHAR_BIT, alphabet[i]);
+        melt_printf(MODE_DRAW, i * CHAR_BIT, CHAR_BIT, u8"%s", alphabet[i]);
 
     for (size_t i = 0; i < TIMEOUT; i++); /* Delay */
     melt_pour_all(MODE_CLEAR);

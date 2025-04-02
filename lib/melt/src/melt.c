@@ -227,32 +227,31 @@ static const letter_t g_letters[] = {
     {0xB4, 0x0491}, {0xB5, 0x00B5}, {0xB6, 0x00B6}, {0xB7, 0x00B7}, {0xB8, 0x0451}, {0xB9, 0x2116}, {0xBA, 0x0454},
     {0xBB, 0x00BB}, {0xBC, 0x0458}, {0xBD, 0x0405}, {0xBE, 0x0455}, {0xBF, 0x0457}};
 
-static int utf8_to_win1251(const uint8_t *utf8, uint8_t *win1251, size_t size) {
-    size_t j = 0;
+static ssize_t utf8_to_win1251(uint8_t *data, size_t size) {
+    ssize_t j = 0;
 
-    if (utf8 == NULL || win1251 == NULL || size == 0)
+    if (data == NULL || size == 0)
         return -1;
 
-    for (size_t i = 0; i < size && utf8[i] != 0; i++) {
-        uint8_t prefix = utf8[i], suffix = utf8[i + 1];
+    for (size_t i = 0; i < size && data[i] != '\0'; i++) {
+        uint8_t prefix = data[i];
         if ((prefix & 0x80) == 0) {
-            win1251[j] = (uint8_t)prefix;
+            data[j] = prefix;
             j++;
-        } else if ((~prefix) & 0x20) {
-            wchar_t first5bit = (wchar_t)(prefix & 0x1F) << 6, sec6bit = suffix & 0x3F,
+        } else if ((~prefix) & 0x20 && i + 1 < size) {
+            wchar_t first5bit = (wchar_t)(prefix & 0x1F) << 6, sec6bit = data[i + 1] & 0x3F,
                     unicode_char = first5bit + sec6bit;
-
             if (unicode_char >= 0x410 && unicode_char <= 0x44F)
-                win1251[j] = (uint8_t)(unicode_char - 0x350);
+                data[j] = (uint8_t)(unicode_char - 0x350);
             else if (unicode_char >= 0x80 && unicode_char <= 0xFF)
-                win1251[j] = (uint8_t)(unicode_char);
+                data[j] = (uint8_t)(unicode_char);
             else if (unicode_char >= 0x402 && unicode_char <= 0x403)
-                win1251[j] = (uint8_t)(unicode_char - 0x382);
+                data[j] = (uint8_t)(unicode_char - 0x382);
             else {
                 size_t count = sizeof(g_letters) / sizeof(letter_t);
-                for (size_t k = 0; k < count; ++k) {
+                for (size_t k = 0; k < count; k++) {
                     if (unicode_char == g_letters[k].utf) {
-                        win1251[j] = g_letters[k].win1251;
+                        data[j] = g_letters[k].win1251;
                         goto next;
                     }
                 }
@@ -263,30 +262,21 @@ static int utf8_to_win1251(const uint8_t *utf8, uint8_t *win1251, size_t size) {
         } else
             return -1;
     }
-    win1251[j] = '\0';
+    data[j++] = '\0';
 
-    return 0;
+    return j;
 }
 
-extern void melt_printf(mode_t mode, uint8_t str, uint8_t col, const uint8_t *fmt, ...) {
+[[gnu::__noinline__]] extern void melt_printf(mode_t mode, uint8_t str, uint8_t col, const uint8_t *fmt, ...) {
     va_list args;
-    volatile size_t size;
-    uint8_t *cpy, *out;
+    volatile ssize_t size;
+    uint8_t *out;
 
     if (str >= MELT_HEIGHT || fmt == NULL)
         return;
 
-    for (size = 0; fmt[size++] != '\0';);
-
-    cpy = (uint8_t *)alloca(size * sizeof(uint8_t));
-    if (cpy == NULL)
-        return;
-
-    if (utf8_to_win1251(fmt, cpy, size) != 0)
-        return;
-
     va_start(args, fmt);
-    size = vsnprintf(NULL, 0, (const char *)cpy, args) + sizeof_array("");
+    size = vsnprintf(NULL, 0, (const char *)fmt, args) + sizeof_array("");
     va_end(args);
 
     out = (uint8_t *)alloca(size * sizeof(uint8_t));
@@ -294,10 +284,14 @@ extern void melt_printf(mode_t mode, uint8_t str, uint8_t col, const uint8_t *fm
         return;
 
     va_start(args, fmt);
-    vsnprintf((char *)out, size, (const char *)cpy, args);
+    vsnprintf((char *)out, size, (const char *)fmt, args);
     va_end(args);
 
-    for (size_t i = 0; i < size; i++) {
+    size = utf8_to_win1251(out, size);
+    if (size < 0)
+        return;
+
+    for (ssize_t i = 0; i < size && out[i] != '\0'; i++) {
         uint8_t c = col + (7 * i);
         if (c < MELT_WIDTH)
             melt_pour_bitmap(mode, str, c, &font[out[i] * 6], 1, 6);
