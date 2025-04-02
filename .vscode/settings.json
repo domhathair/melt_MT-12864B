@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "gpio.h": "c",
-        "melt.h": "c",
-        "rcc.h": "c",
-        "nvic.h": "c"
-    }
-}
